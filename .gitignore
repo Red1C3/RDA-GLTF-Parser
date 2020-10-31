@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Developer Defined
+/.vscode
+/Assets
+/bin
+main.cpp
