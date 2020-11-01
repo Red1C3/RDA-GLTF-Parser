@@ -1,3 +1,6 @@
+#include<sstream>
+#include<fstream>
+#include<iostream>
 namespace RDAGLTFParser{
     class Gltf{
 private:
@@ -44,7 +47,6 @@ private:
             }
         };
         Scene* scene;
-        char* readDataFromAccessor(int accessor,int& count);
 public:
         Gltf(const char* path);
     };

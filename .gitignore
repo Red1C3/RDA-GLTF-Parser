@@ -36,3 +36,4 @@
 /Assets
 /bin
 main.cpp
+*.pdb
