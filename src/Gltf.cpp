@@ -23,7 +23,12 @@ static inline int getElementOffsetInsideArray(const char* element,const string& 
     int currentIndex=0,elementLength=strlen(element),elementOffset=0;
     for(int i=rootOffset;i<gltfFile.length();i++){
         if(index!=currentIndex){
-            while(gltfFile[i]!=',') i++;
+            while(gltfFile[i]!=','){
+                if(gltfFile[i]=='{'){
+                    while(gltfFile[i]!='}') i++;
+                }
+                i++;
+            }
             currentIndex++;
             continue;
         }
@@ -120,5 +125,87 @@ Gltf::Gltf(const char* path){
         gltfFile=stringStream.str();
         fileStream.close();
     }else throw runtime_error("Couldn't open a GLTF file");
-    
+    scene = new Scene();
+    scene->name=getElementData(gltfFile,getElementOffsetInsideArray("name",gltfFile,getElementOffsetOutsideArray("scenes",gltfFile),0));
+    scene->nodesCount=getArrayIndicesCount(gltfFile,getElementOffsetOutsideArray("nodes",gltfFile));
+    scene->nodes=new Node[scene->nodesCount];
+    for(int i=0;i<scene->nodesCount;i++){
+        scene->nodes[i].name=getElementData(gltfFile,getElementOffsetInsideArray("name",gltfFile,getElementOffsetOutsideArray("nodes",gltfFile),i));
+        scene->nodes[i].mesh=new Mesh();
+        int meshIndex=toInt(getElementData(gltfFile,getElementOffsetInsideArray("mesh",gltfFile,getElementOffsetOutsideArray("nodes",gltfFile),i)));
+        scene->nodes[i].mesh->name=getElementData(gltfFile,getElementOffsetInsideArray("name",gltfFile,getElementOffsetOutsideArray("meshes",gltfFile),meshIndex));
+        scene->nodes[i].mesh->primitvies=new Primitvies();
+        scene->nodes[i].mesh->primitvies->attributes=new Attributes();
+        scene->nodes[i].mesh->primitvies->indices=(unsigned short*) readDataFromAccessor(
+            toInt(getElementData(gltfFile,getElementOffsetInsideArray("indices",gltfFile,getElementOffsetInsideArray("primitives",gltfFile,getElementOffsetOutsideArray("meshes",gltfFile),meshIndex),0))),
+            scene->nodes[i].mesh->primitvies->indicesCount,gltfFile,gltfFilePath
+        );
+        scene->nodes[i].mesh->primitvies->attributes->positionVectors=(float*) readDataFromAccessor(
+            toInt(getElementData(gltfFile,getElementOffsetInsideArray("POSITION",gltfFile,getElementOffsetInsideArray("primitives",gltfFile,getElementOffsetOutsideArray("meshes",gltfFile),meshIndex),0))),
+            scene->nodes[i].mesh->primitvies->attributes->positionVectorsCount,gltfFile,gltfFilePath
+        );
+        scene->nodes[i].mesh->primitvies->attributes->normals=(float*)readDataFromAccessor(
+            toInt(getElementData(gltfFile,getElementOffsetInsideArray("NORMAL",gltfFile,getElementOffsetInsideArray("primitives",gltfFile,getElementOffsetOutsideArray("meshes",gltfFile),meshIndex),0))),
+            scene->nodes[i].mesh->primitvies->attributes->normalsCount,gltfFile,gltfFilePath
+        );
+        scene->nodes[i].mesh->primitvies->attributes->UV_0_Coords=(float*) readDataFromAccessor(
+            toInt(getElementData(gltfFile,getElementOffsetInsideArray("TEXCOORD_0",gltfFile,getElementOffsetInsideArray("primitives",gltfFile,getElementOffsetOutsideArray("meshes",gltfFile),meshIndex),0))),
+            scene->nodes[i].mesh->primitvies->attributes->UV_0_CoordsCount,gltfFile,gltfFilePath
+        );
+    }
+}
+float* Gltf::getPositionVectors(unsigned int & count,int nodeIndex){
+    if(nodeIndex>=scene->nodesCount) throw runtime_error("Invalid node index was inserted while getting position vectors");
+    count=scene->nodes[nodeIndex].mesh->primitvies->attributes->positionVectorsCount;
+    return scene->nodes[nodeIndex].mesh->primitvies->attributes->positionVectors;
+}
+float* Gltf::getPositionVectors(unsigned int& count,const char* nodeName){
+    for(int i=0;i<scene->nodesCount;i++){
+        if(strcmp(nodeName,scene->nodes[i].name.c_str())==0){
+            return getPositionVectors(count,i);
+        }
+    }
+    throw runtime_error("Invalid node name was inserted while getting position vectors");
+}
+float* Gltf::getNormals(unsigned int& count,int nodeIndex){
+    if(nodeIndex>=scene->nodesCount) throw runtime_error("Invalid node index was inserted while getting normal vectors");
+    count=scene->nodes[nodeIndex].mesh->primitvies->attributes->normalsCount;
+    return scene->nodes[nodeIndex].mesh->primitvies->attributes->normals;
+}
+float* Gltf::getNormals(unsigned int& count,const char* nodeName){
+    for(int i=0;i<scene->nodesCount;i++){
+        if(strcmp(nodeName,scene->nodes[i].name.c_str())==0){
+            return getNormals(count,i);
+        }
+    }
+    throw runtime_error("Invalid node name was inserted while getting normal vectors");
+}
+float* Gltf::getUV0Coords(unsigned int& count,int nodeIndex){
+    if(nodeIndex>=scene->nodesCount) throw runtime_error("Invalid node index was inserted while getting UVs_0");
+    count=scene->nodes[nodeIndex].mesh->primitvies->attributes->UV_0_CoordsCount;
+    return scene->nodes[nodeIndex].mesh->primitvies->attributes->UV_0_Coords;
+}
+float* Gltf::getUV0Coords(unsigned int& count,const char* nodeName){
+    for(int i=0;i<scene->nodesCount;i++){
+        if(strcmp(nodeName,scene->nodes[i].name.c_str())==0){
+            return getUV0Coords(count,i);
+        }
+    }
+    throw runtime_error("Invalid node name was inserted while getting UVs");
+}
+unsigned short* Gltf::getFacesIndices(unsigned int& count,int nodeIndex){
+    if(nodeIndex>=scene->nodesCount) throw runtime_error("Invalid node index was inserted while getting Faces");
+    count=scene->nodes[nodeIndex].mesh->primitvies->indicesCount;
+    return scene->nodes[nodeIndex].mesh->primitvies->indices;
+}
+unsigned short* Gltf::getFacesIndices(unsigned int& count,const char* nodeName){
+    for(int i=0;i<scene->nodesCount;i++){
+        if(strcmp(nodeName,scene->nodes[i].name.c_str())==0){
+            return getFacesIndices(count,i);
+        }
+    }
+    throw runtime_error("Invalid node name was inserted while getting UVs");
+}
+Gltf::~Gltf(){
+    delete scene;
 }

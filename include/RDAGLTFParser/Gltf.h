@@ -1,11 +1,10 @@
 #include<sstream>
 #include<fstream>
-#include<iostream>
 namespace RDAGLTFParser{
     class Gltf{
 private:
         struct Attributes{
-            float* positionVectors,*normals,*UV_0_Coords;
+            float *positionVectors,*normals,*UV_0_Coords;
             int positionVectorsCount,normalsCount,UV_0_CoordsCount;
             ~Attributes(){
                 delete[] positionVectors;
@@ -25,21 +24,21 @@ private:
         };
         struct Mesh
         {
-            const char* name;
+            std::string name;
             Primitvies* primitvies;
             ~Mesh(){
                 delete primitvies;
             }
         };
         struct Node{
-            const char * name;
+            std::string name;
             Mesh* mesh;
             ~Node(){
                 delete mesh;
             }
         };
         struct Scene{
-            const char* name;
+            std::string name;
             Node* nodes;
             int nodesCount;
             ~Scene(){
@@ -49,5 +48,14 @@ private:
         Scene* scene;
 public:
         Gltf(const char* path);
+        ~Gltf();
+        float* getPositionVectors(unsigned int& count,int nodeIndex);
+        float* getPositionVectors(unsigned int& count,const char* nodeName); 
+        float* getNormals(unsigned int& count,int nodeIndex);
+        float* getNormals(unsigned int & count,const char* nodeName);
+        float* getUV0Coords(unsigned int& count,int nodeIndex);
+        float* getUV0Coords(unsigned int& count,const char* nodeName);
+        unsigned short* getFacesIndices(unsigned int& count,int nodeIndex);
+        unsigned short* getFacesIndices(unsigned int& count,const char* nodeName);
     };
 }
