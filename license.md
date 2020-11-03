@@ -1,18 +1,3 @@
-# RDA GLTF Parser
- A C++ library to parse GLTF files
- ## Installation
- Import lib files from \bin and add the headers from \include, in case the .lib files are not valid with your compiler get the source code and compile it.
- ## Docs
- ### [HERE !](https://reddeadalice.github.io/docs/RDA-GLTF-Parser/RDA-GLTF-Parser.html)
- ## Roadmap
- More data in-GLTF-files is will get supported in the future.
-## Contributions
-Feel free to add contributions and pull requests if you have any idea or spotted a bug.
-### Side notes
-The library has only been tested on Blender built-in exporter and may not work on other exporters (Sorry).
-#### Can this library be used to parse JSON file?
-Well maybe, it still lacks some essential features to parse a general JSON file...
-## License
 MIT License
 
 Copyright (c) 2020 Mohammad Issawi
