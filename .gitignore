@@ -38,3 +38,4 @@
 main.cpp
 *.pdb
 src/main.cpp0
+*.gz
