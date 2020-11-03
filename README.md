@@ -4,6 +4,8 @@
  Import lib files from \bin and add the headers from \include, in case the .lib files are not valid with your compiler get the source code and compile it.
  ## Docs
  ### [HERE !](https://reddeadalice.github.io/docs/RDA-GLTF-Parser/RDA-GLTF-Parser.html)
+ ## Find this software useful? support the developer !
+### [Become a Patron !](https://www.patreon.com/RedDeadAlice)
  ## Roadmap
  More data in-GLTF-files is will get supported in the future.
 ## Contributions
