@@ -17,7 +17,7 @@ Well maybe, it still lacks some essential features to parse a general JSON file.
 ## License
 MIT License
 
-Copyright (c) 2020 Mohammad Issawi
+Copyright (c) 2020 RDA-GLTF-Parser by Mohammad Issawi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
